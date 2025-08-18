@@ -8,5 +8,5 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 public interface ProviderRepository extends JpaRepository<Provider,Long > {
-    List<ProviderRepository> findByAvailabilityStatusTrue();
+    List<Provider> findByAvailabilityStatusTrue();
 }
