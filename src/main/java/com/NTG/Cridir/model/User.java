@@ -1,6 +1,7 @@
 package com.NTG.Cridir.model;
 
 
+import com.NTG.Cridir.model.Enum.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,7 +28,5 @@ public class User {
     @Column(nullable = false, length = 20)
     private Role role;
 
-    public enum Role {
-        CUSTOMER, PROVIDER
-    }
+
 }

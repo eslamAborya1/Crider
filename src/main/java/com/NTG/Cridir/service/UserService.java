@@ -19,10 +19,7 @@ public class UserService {
 
     }
 
-    public User getUserById(Long id){
-        return userRepository.findByUserId(id)
-                .orElseThrow(()-> new RuntimeException("User with id "+id+" doesn't exist"));
-    }
+
 
 
 }
