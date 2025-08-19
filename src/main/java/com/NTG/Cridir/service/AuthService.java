@@ -38,22 +38,22 @@ public class AuthService {
 
 
     public AuthResponse signup(SignupRequest request) {
-        // 1. Check email uniqueness
+        // Check email uniqueness
         if (userRepository.existsByEmail(request.email())) {
             throw new RuntimeException("Email already in use");
         }
 
-        // 2. Validate password strength
+        // Validate password strength
         if (request.password().length() < 6 || !request.password().matches(".*\\d.*") || !request.password().matches(".*[a-zA-Z].*")) {
             throw new RuntimeException("Password must be at least 6 characters and contain both letters and numbers");
         }
 
-        // 3. Validate Egyptian phone number (must be 11 digits and start with 010, 011, 012, or 015)
+        // Validate Egyptian phone number (must be 11 digits and start with 010, 011, 012, or 015)
         if (!request.phone().matches("^(010|011|012|015)[0-9]{8}$")) {
             throw new RuntimeException("Phone number must be 11 digits and start with 01 ");
         }
 
-        // 4. Check phone uniqueness for customer or provider
+        // Check phone uniqueness for customer or provider
         if (request.role() == Role.CUSTOMER && customerRepository.findAll()
                 .stream().anyMatch(c -> c.getPhone().equals(request.phone()))) {
             throw new RuntimeException("Phone number already in use by another customer");
@@ -63,7 +63,7 @@ public class AuthService {
             throw new RuntimeException("Phone number already in use by another provider");
         }
 
-        // 5. Create and save user
+        // Create and save user
         User user = new User();
         user.setEmail(request.email());
         user.setPassword(passwordEncoder.encode(request.password()));
@@ -98,14 +98,24 @@ public class AuthService {
 
 
     public AuthResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
-
-        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+        // Validate password is not blank
+        if (request.password() == null || request.password().trim().isEmpty()) {
+            throw new RuntimeException("Password cannot be empty");
         }
 
+        // Find user by email
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+
+        // Match password
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
+        }
+
+        // Generate JWT token
         String token = jwtService.generateToken(user);
+
+        // Return response
         return new AuthResponse(user.getUserId(), user.getEmail(), user.getRole(), token);
     }
 

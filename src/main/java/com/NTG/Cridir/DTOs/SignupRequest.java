@@ -5,7 +5,7 @@ import com.NTG.Cridir.model.Enum.Role;
 import jakarta.validation.constraints.*;
 
 public record SignupRequest(
-        @NotBlank @Email
+        @NotBlank @Email(message = "Email format is invalid")
         String email,
         @NotBlank @Size(min = 6, max = 100)
         String password,
