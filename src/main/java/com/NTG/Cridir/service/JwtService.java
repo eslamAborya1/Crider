@@ -4,6 +4,7 @@ import com.NTG.Cridir.model.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -12,10 +13,16 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private static final String SECRET = "my-super-secret-key-12345678901234567890";
-    private static final long EXPIRATION = 1000 * 60 * 60 * 10; // 10
+    private final Key key;
+    private final long expiration;
 
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    public JwtService(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.expiration}") long expiration
+    ) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.expiration = expiration;
+    }
 
     // Generate token for a user
     public String generateToken(User user) {
@@ -24,12 +31,12 @@ public class JwtService {
                 .claim("userId", user.getUserId())
                 .claim("role", user.getRole().name())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // Validate
+    // Extract email
     public String extractEmail(String token) {
         return Jwts.parser()
                 .setSigningKey(key)
@@ -39,7 +46,7 @@ public class JwtService {
                 .getSubject();
     }
 
-
+    // Extract role
     public String extractRole(String token) {
         return Jwts.parser()
                 .setSigningKey(key)
@@ -49,7 +56,7 @@ public class JwtService {
                 .get("role", String.class);
     }
 
-
+    // Validate
     public boolean isTokenValid(String token, User user) {
         final String email = extractEmail(token);
         return (email.equals(user.getEmail()) && !isTokenExpired(token));

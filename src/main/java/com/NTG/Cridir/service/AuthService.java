@@ -38,10 +38,32 @@ public class AuthService {
 
 
     public AuthResponse signup(SignupRequest request) {
+        // 1. Check email uniqueness
         if (userRepository.existsByEmail(request.email())) {
             throw new RuntimeException("Email already in use");
         }
 
+        // 2. Validate password strength
+        if (request.password().length() < 6 || !request.password().matches(".*\\d.*") || !request.password().matches(".*[a-zA-Z].*")) {
+            throw new RuntimeException("Password must be at least 6 characters and contain both letters and numbers");
+        }
+
+        // 3. Validate Egyptian phone number (must be 11 digits and start with 010, 011, 012, or 015)
+        if (!request.phone().matches("^(010|011|012|015)[0-9]{8}$")) {
+            throw new RuntimeException("Phone number must be 11 digits and start with 01 ");
+        }
+
+        // 4. Check phone uniqueness for customer or provider
+        if (request.role() == Role.CUSTOMER && customerRepository.findAll()
+                .stream().anyMatch(c -> c.getPhone().equals(request.phone()))) {
+            throw new RuntimeException("Phone number already in use by another customer");
+        }
+        if (request.role() == Role.PROVIDER && providerRepository.findAll()
+                .stream().anyMatch(p -> p.getPhone().equals(request.phone()))) {
+            throw new RuntimeException("Phone number already in use by another provider");
+        }
+
+        // 5. Create and save user
         User user = new User();
         user.setEmail(request.email());
         user.setPassword(passwordEncoder.encode(request.password()));
@@ -49,6 +71,7 @@ public class AuthService {
 
         user = userRepository.save(user);
 
+        // 6. Save role-specific details
         if (request.role() == Role.CUSTOMER) {
             Customer customer = new Customer();
             customer.setUser(user);
@@ -61,12 +84,17 @@ public class AuthService {
             provider.setName(request.name());
             provider.setPhone(request.phone());
             providerRepository.save(provider);
+        } else {
+            throw new RuntimeException("Invalid role provided");
         }
 
+        // 7. Generate token
         String token = jwtService.generateToken(user);
 
+        // 8. Return AuthResponse
         return new AuthResponse(user.getUserId(), user.getEmail(), user.getRole(), token);
     }
+
 
 
     public AuthResponse login(LoginRequest request) {
@@ -86,7 +114,12 @@ public class AuthService {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if (passwordEncoder.matches(request.newPassword(), user.getPassword())) {
+            throw new RuntimeException("New password cannot be the same as the old password");
+        }
+
         user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
     }
+
 }

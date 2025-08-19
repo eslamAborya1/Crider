@@ -9,7 +9,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface ServiceRequestRepository extends JpaRepository<ServiceRequest, Long> {
-    List<ServiceRequest> findByCustomer(Customer customer);
-    List<ServiceRequest> findByProvider(Provider provider);
     List<ServiceRequest> findByStatus(ServiceRequest.Status status);
+    List<ServiceRequest> findByCustomerCustomerId(Long customerId);
+
+    //List<ServiceRequest> findByProviderId(Long providerId);
 }

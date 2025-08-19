@@ -13,7 +13,7 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id", nullable = false, unique = true,
             foreignKey = @ForeignKey(name = "fk_customer_user"))
     private User user;
