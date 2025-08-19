@@ -4,16 +4,14 @@ import com.NTG.Cridir.DTOs.ServiceRequestDTO;
 import com.NTG.Cridir.DTOs.ServiceRequestResponse;
 import com.NTG.Cridir.model.ServiceRequest;
 import com.NTG.Cridir.service.ServiceRequestService;
-
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/requests")
+@RequestMapping("/requests")
 
 public class ServiceRequestController {
 

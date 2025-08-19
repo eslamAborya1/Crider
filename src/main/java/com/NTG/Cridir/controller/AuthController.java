@@ -4,12 +4,9 @@ import com.NTG.Cridir.DTOs.AuthResponse;
 import com.NTG.Cridir.DTOs.LoginRequest;
 import com.NTG.Cridir.DTOs.ResetPasswordRequest;
 import com.NTG.Cridir.DTOs.SignupRequest;
-import com.NTG.Cridir.repository.UserRepository;
 import com.NTG.Cridir.service.AuthService;
-import com.NTG.Cridir.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

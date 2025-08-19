@@ -8,7 +8,6 @@ import com.NTG.Cridir.model.Enum.Role;
 import com.NTG.Cridir.repository.CustomerRepository;
 import com.NTG.Cridir.repository.ProviderRepository;
 import com.NTG.Cridir.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
