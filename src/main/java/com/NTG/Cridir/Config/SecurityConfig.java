@@ -16,16 +16,15 @@ import org.springframework.security.web.SecurityFilterChain;
                 return new BCryptPasswordEncoder();
             }
 
-            @Bean
-            public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-                http.csrf(csrf -> csrf.disable()) // disable CSRF for Postman testing
-                        .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/auth/**").permitAll()   // signup/login/reset are public
-                                .anyRequest().permitAll()            // everything else needs auth
-                        );
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable()) // Disable CSRF for testing
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll() // Allow ALL requests without authentication
+                );
 
-                return http.build();
-            }
+        return http.build();
+    }
 
     }
 
