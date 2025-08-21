@@ -58,7 +58,7 @@ public class LocationService {
         Provider provider = providerRepository.findById(providerId)
                 .orElseThrow(() -> new IllegalArgumentException("Provider not found"));
 
-        provider.setAvailable(available); // لازم يكون عندك حقل available في Provider
+        provider.setAvailabilityStatus(available); // لازم يكون عندك حقل available في Provider
         providerRepository.save(provider);
     }
 }

@@ -30,6 +30,6 @@ public class Provider {
     public String getName() {
         return user != null ? user.getName() : null;
     }
-    private boolean available;
+
 
 }
