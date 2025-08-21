@@ -69,6 +69,11 @@ public class ServiceRequestService {
                 .collect(Collectors.toList());
     }
 
+    public List<ServiceRequestResponse> getRequestsByProvider(Long providerId) {
+        return serviceRequestRepository.findByProviderProviderId(providerId)
+                .stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
     // Providers see pending requests
     public List<ServiceRequestResponse> getPendingRequests() {
         return serviceRequestRepository.findByStatus(Status.PENDING)

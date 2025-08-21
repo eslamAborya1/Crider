@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/requests")
+@RequestMapping("/request")
 
 public class ServiceRequestController {
 
@@ -37,6 +37,10 @@ public class ServiceRequestController {
     @GetMapping("/customer/{customerId}")
     public List<ServiceRequestResponse> getCustomerRequests(@PathVariable Long customerId) {
         return serviceRequestService.getRequestsByCustomer(customerId);
+    }
+    @GetMapping("/provider/{providerId}")
+    public List<ServiceRequestResponse> getProviderRequests(@PathVariable Long providerId) {
+        return serviceRequestService.getRequestsByProvider(providerId);
     }
 
     // Provider views pending requests
