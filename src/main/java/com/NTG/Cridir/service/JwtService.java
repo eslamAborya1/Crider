@@ -1,6 +1,7 @@
 package com.NTG.Cridir.service;
 
 import com.NTG.Cridir.model.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -24,7 +25,7 @@ public class JwtService {
         this.expiration = expiration;
     }
 
-    // Generate token for a user
+    // Generate JWT token for a user
     public String generateToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getEmail())
@@ -36,39 +37,33 @@ public class JwtService {
                 .compact();
     }
 
-    // Extract email
-    public String extractEmail(String token) {
+    // Extract all claims from token
+    private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
+    }
+
+    // Extract email (subject)
+    public String extractEmail(String token) {
+        return extractAllClaims(token).getSubject();
     }
 
     // Extract role
     public String extractRole(String token) {
-        return Jwts.parser()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("role", String.class);
+        return extractAllClaims(token).get("role", String.class);
     }
 
-    // Validate
+    // Check if token is valid
     public boolean isTokenValid(String token, User user) {
         final String email = extractEmail(token);
-        return (email.equals(user.getEmail()) && !isTokenExpired(token));
+        return email.equals(user.getEmail()) && !isTokenExpired(token);
     }
 
+    // Check if token is expired
     private boolean isTokenExpired(String token) {
-        Date expiration = Jwts.parser()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getExpiration();
-        return expiration.before(new Date());
+        return extractAllClaims(token).getExpiration().before(new Date());
     }
 }

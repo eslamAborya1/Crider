@@ -8,4 +8,5 @@ import java.util.Optional;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer,Long > {
 
+    void deleteByUserUserId(Long userId);
 }

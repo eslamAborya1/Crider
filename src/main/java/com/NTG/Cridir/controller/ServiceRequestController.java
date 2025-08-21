@@ -2,7 +2,7 @@ package com.NTG.Cridir.controller;
 
 import com.NTG.Cridir.DTOs.ServiceRequestDTO;
 import com.NTG.Cridir.DTOs.ServiceRequestResponse;
-import com.NTG.Cridir.model.ServiceRequest;
+import com.NTG.Cridir.model.Enum.Status;
 import com.NTG.Cridir.service.ServiceRequestService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +54,7 @@ public class ServiceRequestController {
     // Provider updates status
     @PatchMapping("/{id}/status")
     public ServiceRequestResponse updateStatus(@PathVariable Long id,
-                                               @RequestParam ServiceRequest.Status status) {
+                                               @RequestParam Status status) {
         return serviceRequestService.updateStatus(id, status);
     }
 }

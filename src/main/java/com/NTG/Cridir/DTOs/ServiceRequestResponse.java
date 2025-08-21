@@ -1,7 +1,6 @@
 package com.NTG.Cridir.DTOs;
 
-import com.NTG.Cridir.model.ServiceRequest.Status;
-
+import com.NTG.Cridir.model.Enum.Status;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
@@ -12,6 +11,7 @@ public record ServiceRequestResponse(
         String providerName,
         String issueType,
         String carType,
+        Integer carModelYear,
         Status status,
         BigDecimal totalCost,
         OffsetDateTime requestTime,

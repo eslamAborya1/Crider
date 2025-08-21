@@ -1,7 +1,4 @@
 package com.NTG.Cridir.service;
-import com.NTG.Cridir.model.Customer;
-import com.NTG.Cridir.model.Enum.Role;
-import com.NTG.Cridir.model.Provider;
 import com.NTG.Cridir.model.User;
 import com.NTG.Cridir.repository.CustomerRepository;
 import com.NTG.Cridir.repository.ProviderRepository;
@@ -26,28 +23,11 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (user.getRole() == Role.CUSTOMER) {
-            Customer customer = customerRepository.findAll()
-                    .stream()
-                    .filter(c -> c.getUser().getUserId().equals(userId))
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Customer not found"));
-            customerRepository.delete(customer);
-        } else if (user.getRole() == Role.PROVIDER) {
-            Provider provider = providerRepository.findAll()
-                    .stream()
-                    .filter(p -> p.getUser().getUserId().equals(userId))
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Provider not found"));
-            providerRepository.delete(provider);
-        } else {
-            // fallback: just delete user
-            userRepository.delete(user);
+        switch (user.getRole()) {
+            case CUSTOMER -> customerRepository.deleteByUserUserId(userId);
+            case PROVIDER -> providerRepository.deleteByUserUserId(userId);
+            default -> userRepository.delete(user);
         }
     }
-
-
-
-
 
 }

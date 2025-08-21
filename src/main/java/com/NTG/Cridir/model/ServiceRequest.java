@@ -1,5 +1,6 @@
 package com.NTG.Cridir.model;
 
+import com.NTG.Cridir.model.Enum.Status;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -9,9 +10,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 
-@Data
-@Setter
-@Getter
+
 @Entity
 @Table(name = "service_request")
 public class ServiceRequest {
@@ -41,9 +40,12 @@ public class ServiceRequest {
     @Column(nullable = false)
     private String carType;
 
+    @Column(nullable = false)
+    private Integer carModelYear;
+
+    @Column( nullable = false)
     @Enumerated(EnumType.STRING)
-    @Column(length = 50, nullable = false)
-    private Status status = Status.PENDING; // default
+    private Status status;
 
     private BigDecimal totalCost;
 
@@ -68,9 +70,6 @@ public class ServiceRequest {
         }
     }
 
-    public enum Status {
-        PENDING, IN_PROGRESS, COMPLETED, CANCELLED
-    }
 
     public Long getRequestId() {
         return requestId;
@@ -120,14 +119,6 @@ public class ServiceRequest {
         this.carType = carType;
     }
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
     public BigDecimal getTotalCost() {
         return totalCost;
     }
@@ -150,5 +141,21 @@ public class ServiceRequest {
 
     public void setEstimatedArrivalSeconds(Long estimatedArrivalSeconds) {
         this.estimatedArrivalSeconds = estimatedArrivalSeconds;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public Integer getCarModelYear() {
+        return carModelYear;
+    }
+
+    public void setCarModelYear(Integer carModelYear) {
+        this.carModelYear = carModelYear;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

@@ -71,20 +71,22 @@ public class AuthService {
         user = userRepository.save(user);
 
         // 6. Save role-specific details
-        if (request.role() == Role.CUSTOMER) {
-            Customer customer = new Customer();
-            customer.setUser(user);
-            customer.setName(request.name());
-            customer.setPhone(request.phone());
-            customerRepository.save(customer);
-        } else if (request.role() == Role.PROVIDER) {
-            Provider provider = new Provider();
-            provider.setUser(user);
-            provider.setName(request.name());
-            provider.setPhone(request.phone());
-            providerRepository.save(provider);
-        } else {
-            throw new RuntimeException("Invalid role provided");
+        switch (request.role()) {
+            case CUSTOMER -> {
+                Customer customer = new Customer();
+                customer.setUser(user);
+                customer.setName(request.name());
+                customer.setPhone(request.phone());
+                customerRepository.save(customer);
+            }
+            case PROVIDER -> {
+                Provider provider = new Provider();
+                provider.setUser(user);
+                provider.setName(request.name());
+                provider.setPhone(request.phone());
+                providerRepository.save(provider);
+            }
+            default -> throw new RuntimeException("Invalid role provided");
         }
 
         // 7. Generate token

@@ -1,10 +1,9 @@
 package com.NTG.Cridir.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import java.util.List;
 
-@Data
+
 @Entity
 @Table(name = "customer")
 public class Customer {

@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface ProviderRepository extends JpaRepository<Provider,Long > {
     List<Provider> findByAvailabilityStatusTrue();
+
+    void deleteByUserUserId(Long userId);
 }

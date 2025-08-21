@@ -21,7 +21,6 @@ public class AuthController {
 
     }
 
-
         @PostMapping("/signup")
         public ResponseEntity<AuthResponse> signup(@RequestBody SignupRequest request) {
             AuthResponse response = authService.signup(request);
@@ -35,13 +34,9 @@ public class AuthController {
         }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
-        try {
-            authService.resetPassword(request);
-            return ResponseEntity.ok("Password reset successful");
-        } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok("Password reset successful");
     }
 
 }
