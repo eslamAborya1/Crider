@@ -23,6 +23,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role = Role.CUSTOMER;
+    @Column(nullable = false)
+    private boolean enabled = false;
+
 
     public Long getId() {
         return this.userId;

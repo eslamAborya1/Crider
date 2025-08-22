@@ -12,9 +12,12 @@ public class Location {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long locationId;
 
-    @Column(nullable = false) private Double latitude;
-    @Column(nullable = false) private Double longitude;
-    @Column(nullable = false) private OffsetDateTime timestamp;
+    @Column(nullable = false) private
+    Double latitude;
+    @Column(nullable = false) private
+    Double longitude;
+    @Column(nullable = false) private
+    OffsetDateTime timestamp;
 
     @PrePersist
     public void setDefaultTimestamp() {

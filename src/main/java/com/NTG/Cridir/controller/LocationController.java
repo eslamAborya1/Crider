@@ -5,6 +5,7 @@ import com.NTG.Cridir.model.Location;
 import com.NTG.Cridir.service.LocationService;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -13,18 +14,19 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class LocationController {
     private final LocationService locationService;
     public LocationController(LocationService s) { this.locationService = s; }
-
+    @PreAuthorize("hasRole('PROVIDER')")
     @PutMapping("/provider")
     public void updateProviderLocation(@RequestBody @Valid LocationUpdateRequest req) {
         locationService.updateProviderLocation(req);
     }
-
+    @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/provider/{providerId}")
     public Location getProviderLocation(@PathVariable Long providerId) {
         return locationService.getProviderLocation(providerId);
     }
 
     // Optional: simple SSE stream (frontend subscribes and polls via events)
+    @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping(path = "/stream/provider/{providerId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamProvider(@PathVariable Long providerId) {
         // naive demo stream (push one snapshot now then complete)

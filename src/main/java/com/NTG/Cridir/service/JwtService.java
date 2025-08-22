@@ -25,7 +25,6 @@ public class JwtService {
         this.expiration = expiration;
     }
 
-    // Generate JWT token for a user
     public String generateToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getEmail())
@@ -37,7 +36,6 @@ public class JwtService {
                 .compact();
     }
 
-    // Extract all claims from token
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(key)
@@ -46,23 +44,19 @@ public class JwtService {
                 .getBody();
     }
 
-    // Extract email (subject)
     public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();
     }
 
-    // Extract role
     public String extractRole(String token) {
         return extractAllClaims(token).get("role", String.class);
     }
 
-    // Check if token is valid
     public boolean isTokenValid(String token, User user) {
         final String email = extractEmail(token);
         return email.equals(user.getEmail()) && !isTokenExpired(token);
     }
 
-    // Check if token is expired
     private boolean isTokenExpired(String token) {
         return extractAllClaims(token).getExpiration().before(new Date());
     }

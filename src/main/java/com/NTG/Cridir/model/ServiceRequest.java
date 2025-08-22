@@ -30,9 +30,12 @@ public class ServiceRequest {
             foreignKey = @ForeignKey(name = "fk_service_request_location"))
     private Location location;
 
-    @Column(nullable = false) private String issueType;
-    @Column(nullable = false) private String carType;
-    @Column(nullable = false) private Integer carModelYear;
+    @Column(nullable = false)
+    private String issueType;
+    @Column(nullable = false)
+    private String carType;
+    @Column(nullable = false)
+    private Integer carModelYear;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -6,6 +6,7 @@ import com.NTG.Cridir.model.Enum.Status;
 import com.NTG.Cridir.service.ServiceRequestService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,40 +23,47 @@ public class ServiceRequestController {
     }
 
     // Customer creates request
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping
     public ServiceRequestResponse createRequest(@RequestBody @Valid ServiceRequestDTO dto) {
         return serviceRequestService.createRequest(dto);
     }
 
     // Get request by id
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('PROVIDER')")
     @GetMapping("/{id}")
     public ServiceRequestResponse getRequest(@PathVariable Long id) {
         return serviceRequestService.getRequest(id);
     }
 
     // Get requests by customer
+    @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/customer/{customerId}")
     public List<ServiceRequestResponse> getCustomerRequests(@PathVariable Long customerId) {
         return serviceRequestService.getRequestsByCustomer(customerId);
     }
+    @PreAuthorize("hasRole('PROVIDER')")
     @GetMapping("/provider/{providerId}")
     public List<ServiceRequestResponse> getProviderRequests(@PathVariable Long providerId) {
         return serviceRequestService.getRequestsByProvider(providerId);
     }
 
     // Provider views pending requests
+    @PreAuthorize("hasRole('PROVIDER')")
     @GetMapping("/pending")
     public List<ServiceRequestResponse> getPendingRequests() {
         return serviceRequestService.getPendingRequests();
     }
 
     // Provider accepts request
-    @PatchMapping("/{id}/accept/{providerId}")
-    public ServiceRequestResponse acceptRequest(@PathVariable Long id, @PathVariable Long providerId) {
-        return serviceRequestService.acceptRequest(id, providerId);
+    @PreAuthorize("hasRole('PROVIDER')")
+    @PatchMapping("/{requestId}/accept/{providerId}")
+    public ServiceRequestResponse acceptRequest(@PathVariable Long requestId, @PathVariable Long providerId) {
+        return serviceRequestService.acceptRequest(requestId, providerId);
     }
 
     // Provider updates status
+    @PreAuthorize("hasRole('PROVIDER')")
     @PatchMapping("/{id}/status")
     public ServiceRequestResponse updateStatus(@PathVariable Long id,
                                                @RequestParam Status status) {

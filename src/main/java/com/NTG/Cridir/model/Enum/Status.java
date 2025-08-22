@@ -1,5 +1,5 @@
-package com.NTG.Cridir.model.Enum;
+    package com.NTG.Cridir.model.Enum;
 
-public enum Status {
-    PENDING, IN_PROGRESS, COMPLETED, ACCEPTED, CANCELLED
-}
+    public enum Status {
+        PENDING, IN_PROGRESS, COMPLETED, ACCEPTED, CANCELLED
+    }

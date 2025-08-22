@@ -16,5 +16,6 @@ public record ServiceRequestResponse(
         BigDecimal totalCost,
         OffsetDateTime requestTime,
         Double latitude,
-        Double longitude
+        Double longitude,
+        Long estimatedArrivalSeconds
 ) {}
