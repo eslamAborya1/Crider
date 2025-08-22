@@ -3,6 +3,7 @@ package com.NTG.Cridir.service;
 import com.NTG.Cridir.DTOs.LocationUpdateRequest;
 import com.NTG.Cridir.Websocket.ProviderLocationSocketHandler;
 import com.NTG.Cridir.exception.NotFoundException;
+import com.NTG.Cridir.mapper.LocationMapper;
 import com.NTG.Cridir.model.Location;
 import com.NTG.Cridir.model.Provider;
 import com.NTG.Cridir.repository.LocationRepository;
@@ -16,13 +17,16 @@ public class LocationService {
     private final LocationRepository locationRepository;
     private final ProviderRepository providerRepository;
     private final ProviderLocationSocketHandler socketHandler;
+    private final LocationMapper locationMapper;
 
     public LocationService(LocationRepository locationRepository,
                            ProviderRepository providerRepository,
-                           ProviderLocationSocketHandler socketHandler) {
+                           ProviderLocationSocketHandler socketHandler,
+                           LocationMapper locationMapper) {
         this.locationRepository = locationRepository;
         this.providerRepository = providerRepository;
         this.socketHandler = socketHandler;
+        this.locationMapper = locationMapper;
     }
 
     @Transactional
@@ -32,12 +36,12 @@ public class LocationService {
 
         Location loc = provider.getCurrentLocation();
         if (loc == null) {
-            loc = new Location();
+            loc = locationMapper.toEntity(req); // جديد
+        } else {
+            locationMapper.updateEntityFromDto(req, loc); // تحديث
         }
-        loc.setLatitude(req.latitude());
-        loc.setLongitude(req.longitude());
-        loc = locationRepository.save(loc);
 
+        loc = locationRepository.save(loc);
         provider.setCurrentLocation(loc);
         providerRepository.save(provider);
 

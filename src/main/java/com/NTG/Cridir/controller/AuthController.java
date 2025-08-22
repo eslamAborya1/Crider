@@ -5,6 +5,7 @@ import com.NTG.Cridir.DTOs.LoginRequest;
 import com.NTG.Cridir.DTOs.ResetPasswordRequest;
 import com.NTG.Cridir.DTOs.SignupRequest;
 import com.NTG.Cridir.service.AuthService;
+import com.NTG.Cridir.service.EmailService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,10 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    public AuthController(AuthService authService) { this.authService = authService; }
+    private final EmailService emailService;
+    public AuthController(AuthService authService, EmailService emailService) { this.authService = authService;
+        this.emailService = emailService;
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> signup(@Valid @RequestBody SignupRequest request) {
@@ -35,7 +39,7 @@ public class AuthController {
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestParam String email) {
-        authService.sendResetPasswordEmail(email);
+        emailService.sendResetPasswordEmail(email);
         return ResponseEntity.ok("Reset password link sent!");
     }
 

@@ -45,7 +45,8 @@ public class AuthService {
 
         User user = userMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.password()));
-        user = userRepository.save(user);
+        userRepository.save(user);
+
 
         createRoleEntity(user);
 
@@ -77,14 +78,6 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("Invalid token"));
         user.setEnabled(true);
         userRepository.save(user);
-    }
-
-    // ----------------- FORGOT PASSWORD -----------------
-    public void sendResetPasswordEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        String resetToken = jwtService.generateToken(user);
-        emailService.sendResetPasswordEmail(user, resetToken);
     }
 
     // ----------------- RESET PASSWORD -----------------

@@ -27,7 +27,4 @@ public class User {
     private boolean enabled = false;
 
 
-    public Long getId() {
-        return this.userId;
-    }
 }

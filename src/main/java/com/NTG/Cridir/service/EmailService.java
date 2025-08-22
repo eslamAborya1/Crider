@@ -1,43 +1,79 @@
 package com.NTG.Cridir.service;
 
-import com.NTG.Cridir.events.EmailEvent;
-import com.NTG.Cridir.events.EmailProducer;
+import com.NTG.Cridir.exception.NotFoundException;
 import com.NTG.Cridir.model.User;
+import com.NTG.Cridir.repository.UserRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EmailService {
-    private final EmailProducer producer;
+    private final JavaMailSender mailSender;
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
+
+    public EmailService(JavaMailSender mailSender, JwtService jwtService, UserRepository userRepository) {
+        this.mailSender = mailSender;
+        this.jwtService = jwtService;
+        this.userRepository = userRepository;
+    }
 
     @Value("${app.frontend.base-url}")
-    private String frontendBaseUrl;
+    private String appBaseUrl;
 
-    public EmailService(EmailProducer producer) {
-        this.producer = producer;
+    public void sendActivationEmail(User user, String token) {
+        String activationLink = appBaseUrl + "/activate?token=" + token;
+
+        String subject = "Activate your Cridir account";
+        String body = "<p>Hello " + user.getName() + ",</p>"
+                + "<p>Please click the link below to activate your account:</p>"
+                + "<p><a href=\"" + activationLink + "\">Activate Account</a></p>";
+
+        sendEmail(user.getEmail(), subject, body);
     }
 
     public void sendEmail(String to, String subject, String htmlContent) {
-        producer.sendEmailEvent(new EmailEvent(to, subject, htmlContent));
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom("member@cridir.com");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true); // true عشان HTML
+
+            mailSender.send(message);
+            System.out.println(" Email sent to " + to);
+        } catch (MessagingException e) {
+            throw new RuntimeException(" Failed to send email", e);
+        }
     }
 
-    public void sendActivationEmail(User user, String token) {
-        String link = frontendBaseUrl + "/activate?token=" + token;
-        String html = """
-            <p>Hi %s,</p>
-            <p>Please activate your account by clicking the link below:</p>
-            <a href="%s">Activate Account</a>
-        """.formatted(user.getName(), link);
-        sendEmail(user.getEmail(), "Activate your Cridir account", html);
+    @Transactional
+    public void sendResetPasswordEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        //  أنشئ توكن (ممكن تخليه UUID أو JWT منفصل)
+        String resetToken = jwtService.generateToken(user);
+
+        // هنا ممكن تخزن الـ token في جدول ResetTokens أو تخليه في Redis لو حابب
+        // في النسخة البسيطة ممكن تبعته بس من غير تخزين
+
+        String resetLink = appBaseUrl + "/reset-password?token=" + resetToken;
+
+        String subject = "Reset your Cridir password";
+        String body = "<p>Hello " + user.getName() + ",</p>"
+                + "<p>We received a request to reset your password.</p>"
+                + "<p><a href=\"" + resetLink + "\">Click here to reset your password</a></p>"
+                + "<p>If you didn’t request this, you can safely ignore this email.</p>";
+
+        sendEmail(user.getEmail(), subject, body);
     }
 
-    public void sendResetPasswordEmail(User user, String token) {
-        String link = frontendBaseUrl + "/reset-password?token=" + token;
-        String html = """
-            <p>Hi %s,</p>
-            <p>Click the link to reset your password:</p>
-            <a href="%s">Reset Password</a>
-        """.formatted(user.getName(), link);
-        sendEmail(user.getEmail(), "Reset your Cridir password", html);
-    }
 }

@@ -3,6 +3,7 @@ package com.NTG.Cridir.service;
 import com.NTG.Cridir.DTOs.UserProfileDTO;
 import com.NTG.Cridir.DTOs.UserUpdateRequest;
 import com.NTG.Cridir.exception.NotFoundException;
+import com.NTG.Cridir.mapper.UserMapper;
 import com.NTG.Cridir.model.User;
 import com.NTG.Cridir.repository.CustomerRepository;
 import com.NTG.Cridir.repository.ProviderRepository;
@@ -15,40 +16,32 @@ public class UserService {
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final ProviderRepository providerRepository;
+    private final UserMapper userMapper;
 
     public UserService(UserRepository userRepository,
                        CustomerRepository customerRepository,
-                       ProviderRepository providerRepository) {
+                       ProviderRepository providerRepository,
+                       UserMapper userMapper) {
         this.userRepository = userRepository;
         this.customerRepository = customerRepository;
         this.providerRepository = providerRepository;
+        this.userMapper = userMapper;
     }
 
     public UserProfileDTO getProfile(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        return mapToResponse(user);
+        return userMapper.toProfileDTO(user);
     }
 
     public UserProfileDTO updateProfile(String email, UserUpdateRequest request) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
-        if (request.name() != null) user.setName(request.name());
-        if (request.phone() != null) user.setPhone(request.phone());
-
+        userMapper.updateUserFromRequest(request, user);
         userRepository.save(user);
-        return mapToResponse(user);
-    }
 
-    private UserProfileDTO mapToResponse(User user) {
-        return new UserProfileDTO(
-                user.getId(),
-                user.getEmail(),
-                user.getRole(),
-                user.getName(),
-                user.getPhone()
-        );
+        return userMapper.toProfileDTO(user);
     }
 
     @Transactional
