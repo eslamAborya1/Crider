@@ -21,7 +21,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final EmailService emailService;
-    private final UserMapper userMapper;
+    private final UserMapper userMapper; // ← ده اللي عملناه manual
 
     public AuthService(UserRepository userRepository,
                        CustomerRepository customerRepository,
@@ -43,10 +43,10 @@ public class AuthService {
     public AuthResponse signup(SignupRequest request) {
         validateSignup(request);
 
+        // نستخدم UserMapper اللي كتبناه manual
         User user = userMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.password()));
         userRepository.save(user);
-
 
         createRoleEntity(user);
 
@@ -97,7 +97,6 @@ public class AuthService {
     private void validateSignup(SignupRequest request) {
         if (userRepository.existsByEmail(request.email()))
             throw new RuntimeException("Email already in use");
-        // باقي الفاليديشن موجود في DTOs و GlobalExceptionHandler هيطلّع رسائل واضحة
     }
 
     private void createRoleEntity(User user) {
