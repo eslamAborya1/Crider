@@ -10,6 +10,8 @@ import com.NTG.Cridir.repository.*;
 import com.NTG.Cridir.util.GeoUtils;
 import com.NTG.Cridir.util.PricingUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,12 +67,19 @@ public class ServiceRequestService {
         return mapper.toResponse(findRequestById(requestId));
     }
 
-    public List<ServiceRequestResponse> getRequestsByCustomer(Long customerId) {
-        return serviceRequestRepository.findByCustomerCustomerId(customerId)
-                .stream()
-                .map(mapper::toResponse)
-                .collect(Collectors.toList());
-    }
+//    public List<ServiceRequestResponse> getRequestsByCustomer(Long customerId) {
+//        return serviceRequestRepository.findByCustomerCustomerId(customerId)
+//                .stream()
+//                .map(mapper::toResponse)
+//                .collect(Collectors.toList());
+//    }
+public List<ServiceRequestResponse> getRequestsByCustomer(Long customerId) {
+    return serviceRequestRepository.findByCustomerCustomerId(customerId)
+            .stream()
+            .map(mapper::toResponse)
+            .toList();
+}
+
 
     public List<ServiceRequestResponse> getRequestsByProvider(Long providerId) {
         return serviceRequestRepository.findByProviderProviderId(providerId)
@@ -79,27 +88,62 @@ public class ServiceRequestService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ServiceRequestResponse> getPendingRequests() {
-        return serviceRequestRepository.findByStatus(Status.PENDING)
+        return serviceRequestRepository.findByStatusAndProviderIsNull(Status.PENDING)
                 .stream()
                 .map(mapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
+
     // Provider accepts a request
+//    public ServiceRequestResponse acceptRequest(Long requestId, Long providerId) {
+//        ServiceRequest request = findRequestById(requestId);
+//        Provider provider = providerRepository.findById(providerId)
+//                .orElseThrow(() -> new NotFoundException("Provider not found"));
+//
+//        request.setProvider(provider);
+//        request.setStatus(Status.ACCEPTED);
+//
+//        calculateCostAndEta(request, provider);
+//
+//        serviceRequestRepository.save(request);
+//        return mapper.toResponse(request);
+//    }
+
+    @Transactional
     public ServiceRequestResponse acceptRequest(Long requestId, Long providerId) {
-        ServiceRequest request = findRequestById(requestId);
+        ServiceRequest request = serviceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException("Request not found"));
+
         Provider provider = providerRepository.findById(providerId)
                 .orElseThrow(() -> new NotFoundException("Provider not found"));
 
+        // ربط الـ Provider بالـ Request
         request.setProvider(provider);
         request.setStatus(Status.ACCEPTED);
 
-        calculateCostAndEta(request, provider);
+        //  حساب التكلفه
+        double basePrice = PricingUtils.getBasePrice(request.getIssueType());
+
+        double distance = GeoUtils.haversine(
+                request.getLocation().getLatitude(),
+                request.getLocation().getLongitude(),
+                provider.getCurrentLocation().getLatitude(),
+                provider.getCurrentLocation().getLongitude()
+        );
+
+        double distanceCost = distance * 10; // 10 جنيه لكل كم
+        double totalCost = basePrice + distanceCost;
+
+        request.setTotalCost(BigDecimal.valueOf(totalCost));
 
         serviceRequestRepository.save(request);
+
         return mapper.toResponse(request);
     }
+
 
     // 🔹 Helper Methods
     private ServiceRequest findRequestById(Long id) {
@@ -121,7 +165,7 @@ public class ServiceRequestService {
             double distanceFee = distanceKm * 10;
             request.setTotalCost(BigDecimal.valueOf(baseCost + distanceFee));
 
-            double speedKmh = 40.0;
+            double speedKmh = 80.0;
             long etaSeconds = (long) ((distanceKm / speedKmh) * 3600);
             request.setEstimatedArrivalTime(java.time.Duration.ofSeconds(etaSeconds));
         }

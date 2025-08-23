@@ -5,7 +5,9 @@ import com.NTG.Cridir.DTOs.ServiceRequestResponse;
 import com.NTG.Cridir.model.Location;
 import com.NTG.Cridir.model.ServiceRequest;
 import org.mapstruct.*;
+import org.springframework.stereotype.Component;
 
+@Component
 @Mapper(componentModel = "spring")
 public interface ServiceRequestMapper {
 

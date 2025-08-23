@@ -27,11 +27,13 @@ public class ProviderController {
                                    @RequestBody @Valid ProviderAvailabilityRequest req) {
         locationService.toggleProviderAvailability(providerId, req.available());
     }
+
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/available")
     public List<Provider> availableProviders() {
         return providerRepository.findByAvailabilityStatusTrue();
     }
+
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('PROVIDER')")
     @GetMapping("/{providerId}")
     public Provider getProvider(@PathVariable Long providerId) {

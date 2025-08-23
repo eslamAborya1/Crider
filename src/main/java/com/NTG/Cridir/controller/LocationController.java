@@ -2,9 +2,11 @@ package com.NTG.Cridir.controller;
 
 import com.NTG.Cridir.DTOs.LocationUpdateRequest;
 import com.NTG.Cridir.model.Location;
+import com.NTG.Cridir.service.AuthService;
 import com.NTG.Cridir.service.LocationService;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -13,31 +15,41 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RequestMapping("/location")
 public class LocationController {
     private final LocationService locationService;
-    public LocationController(LocationService s) { this.locationService = s; }
-    @PreAuthorize("hasRole('PROVIDER')")
-    @PutMapping("/provider")
-    public void updateProviderLocation(@RequestBody @Valid LocationUpdateRequest req) {
-        locationService.updateProviderLocation(req);
+    private final AuthService authService;
+    public LocationController(LocationService s, AuthService authService) { this.locationService = s;
+        this.authService = authService;
     }
+    @PreAuthorize("hasRole('PROVIDER')")
+    @PostMapping("/provider")
+    public ResponseEntity<Void> updateProviderLocation(@RequestBody @Valid LocationUpdateRequest req) {
+        locationService.updateProviderLocation(req);
+        return ResponseEntity.noContent().build();
+    }
+
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/provider/{providerId}")
     public Location getProviderLocation(@PathVariable Long providerId) {
         return locationService.getProviderLocation(providerId);
     }
 
-    // Optional: simple SSE stream (frontend subscribes and polls via events)
     @PreAuthorize("hasRole('CUSTOMER')")
-    @GetMapping(path = "/stream/provider/{providerId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter streamProvider(@PathVariable Long providerId) {
-        // naive demo stream (push one snapshot now then complete)
+    @GetMapping(path = "/stream/request/{requestId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamProviderForRequest(
+            @PathVariable Long requestId,
+            @RequestHeader("Authorization") String authHeader) {
+
+        // استخرج الـ token من الهيدر
+        String token = authHeader.replace("Bearer ", "");
+        Long customerId = authService.getCurrentUserId(token);
+
         SseEmitter emitter = new SseEmitter(0L);
         try {
-            Location loc = locationService.getProviderLocation(providerId);
+            Location loc = locationService.getProviderLocationForRequest(requestId, customerId);
             emitter.send(SseEmitter.event().name("location").data(loc));
-            emitter.complete();
         } catch (Exception e) {
             emitter.completeWithError(e);
         }
         return emitter;
     }
+
 }

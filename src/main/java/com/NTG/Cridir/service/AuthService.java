@@ -106,4 +106,11 @@ public class AuthService {
             var p = new Provider(); p.setUser(user); providerRepository.save(p);
         }
     }
+
+    public Long getCurrentUserId(String token) {
+        String email = jwtService.extractEmail(token);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"))
+                .getUserId();
+    }
 }

@@ -31,17 +31,18 @@ public class ServiceRequestController {
 
     // Get request by id
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('PROVIDER')")
-    @GetMapping("/{id}")
-    public ServiceRequestResponse getRequest(@PathVariable Long id) {
-        return serviceRequestService.getRequest(id);
+    @GetMapping("/{requestId}")
+    public ServiceRequestResponse getRequest(@PathVariable Long requestId) {
+        return serviceRequestService.getRequest(requestId);
     }
 
-    // Get requests by customer
+    // Get history of requests for one customer
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/customer/{customerId}")
     public List<ServiceRequestResponse> getCustomerRequests(@PathVariable Long customerId) {
         return serviceRequestService.getRequestsByCustomer(customerId);
     }
+    //ال requests الخاصه ب provider معين
     @PreAuthorize("hasRole('PROVIDER')")
     @GetMapping("/provider/{providerId}")
     public List<ServiceRequestResponse> getProviderRequests(@PathVariable Long providerId) {

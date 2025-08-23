@@ -16,6 +16,6 @@ public class PricingUtils {
     }
 
     public static double getBasePrice(String issueType) {
-        return BASE_PRICES.getOrDefault(issueType.toUpperCase(), 100.0); // fallback = 100
+        return BASE_PRICES.getOrDefault(issueType.toUpperCase(), 0.0); // fallback = 100
     }
 }

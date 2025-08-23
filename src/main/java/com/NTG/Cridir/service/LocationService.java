@@ -6,8 +6,10 @@ import com.NTG.Cridir.exception.NotFoundException;
 import com.NTG.Cridir.mapper.LocationMapper;
 import com.NTG.Cridir.model.Location;
 import com.NTG.Cridir.model.Provider;
+import com.NTG.Cridir.model.ServiceRequest;
 import com.NTG.Cridir.repository.LocationRepository;
 import com.NTG.Cridir.repository.ProviderRepository;
+import com.NTG.Cridir.repository.ServiceRequestRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,15 +20,18 @@ public class LocationService {
     private final ProviderRepository providerRepository;
     private final ProviderLocationSocketHandler socketHandler;
     private final LocationMapper locationMapper;
+    private final ServiceRequestRepository serviceRequestRepository;
 
     public LocationService(LocationRepository locationRepository,
                            ProviderRepository providerRepository,
                            ProviderLocationSocketHandler socketHandler,
-                           LocationMapper locationMapper) {
+                           LocationMapper locationMapper, ServiceRequestRepository serviceRequestRepository) {
         this.locationRepository = locationRepository;
         this.providerRepository = providerRepository;
         this.socketHandler = socketHandler;
         this.locationMapper = locationMapper;
+
+        this.serviceRequestRepository = serviceRequestRepository;
     }
 
     @Transactional
@@ -57,6 +62,23 @@ public class LocationService {
         }
         return provider.getCurrentLocation();
     }
+    @Transactional(readOnly = true)
+    public Location getProviderLocationForRequest(Long requestId, Long customerId) {
+        ServiceRequest request = serviceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException("Request not found"));
+
+        // ✅ تأكد إن الـ request ده تابع للـ Customer الحالي
+        if (!request.getCustomer().getUser().getUserId().equals(customerId)) {
+            throw new RuntimeException("Unauthorized to view this provider location");
+        }
+
+        Provider provider = request.getProvider();
+        if (provider == null || provider.getCurrentLocation() == null) {
+            throw new NotFoundException("Provider location not found");
+        }
+
+        return provider.getCurrentLocation();
+    }
 
     public void toggleProviderAvailability(Long providerId, boolean available) {
         Provider provider = providerRepository.findById(providerId)
@@ -65,4 +87,5 @@ public class LocationService {
         provider.setAvailabilityStatus(available);
         providerRepository.save(provider);
     }
+
 }
