@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             User user = userRepository.findByEmail(email).orElse(null);
 
             if (user != null && jwtService.isTokenValid(jwt, user)) {
-                // ✅ نستخدم UserDetails الجاهز بتاع Spring Security
+
                 UserDetails userDetails = org.springframework.security.core.userdetails.User
                         .withUsername(user.getEmail())
                         .password(user.getPassword())

@@ -30,7 +30,7 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(request));
     }
 
-    // GET /auth/activate?token=...
+
     @GetMapping("/activate")
     public ResponseEntity<String> activate(@RequestParam String token) {
         authService.activateAccount(token);

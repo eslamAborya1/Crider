@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
-@EnableMethodSecurity // مهم علشان @PreAuthorize تشتغل
+@EnableMethodSecurity 
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -57,7 +57,7 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/request/**").permitAll()//hasAnyRole("CUSTOMER", "PROVIDER")
+                        .requestMatchers("/request/**").hasAnyRole("CUSTOMER", "PROVIDER")
                         .requestMatchers("/location/**", "/providers/**").permitAll()
                         .anyRequest().authenticated()
                 )

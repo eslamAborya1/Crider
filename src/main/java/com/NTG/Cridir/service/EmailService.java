@@ -45,7 +45,7 @@ public class EmailService {
             helper.setFrom("member@cridir.com");
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(htmlContent, true); // true عشان HTML
+            helper.setText(htmlContent, true);
 
             mailSender.send(message);
             System.out.println(" Email sent to " + to);
@@ -59,11 +59,8 @@ public class EmailService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
-        //  أنشئ توكن (ممكن تخليه UUID أو JWT منفصل)
-        String resetToken = jwtService.generateToken(user);
 
-        // هنا ممكن تخزن الـ token في جدول ResetTokens أو تخليه في Redis لو حابب
-        // في النسخة البسيطة ممكن تبعته بس من غير تخزين
+        String resetToken = jwtService.generateToken(user);
 
         String resetLink = appBaseUrl + "/reset-password?token=" + resetToken;
 

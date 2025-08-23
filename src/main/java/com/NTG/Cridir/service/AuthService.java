@@ -41,9 +41,8 @@ public class AuthService {
 
     // ----------------- SIGNUP -----------------
     public AuthResponse signup(SignupRequest request) {
-        validateSignup(request);
 
-        // نستخدم UserMapper اللي كتبناه manual
+        validateSignup(request);
         User user = userMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.password()));
         userRepository.save(user);

@@ -67,12 +67,6 @@ public class ServiceRequestService {
         return mapper.toResponse(findRequestById(requestId));
     }
 
-//    public List<ServiceRequestResponse> getRequestsByCustomer(Long customerId) {
-//        return serviceRequestRepository.findByCustomerCustomerId(customerId)
-//                .stream()
-//                .map(mapper::toResponse)
-//                .collect(Collectors.toList());
-//    }
 public List<ServiceRequestResponse> getRequestsByCustomer(Long customerId) {
     return serviceRequestRepository.findByCustomerCustomerId(customerId)
             .stream()
@@ -98,19 +92,6 @@ public List<ServiceRequestResponse> getRequestsByCustomer(Long customerId) {
 
 
     // Provider accepts a request
-//    public ServiceRequestResponse acceptRequest(Long requestId, Long providerId) {
-//        ServiceRequest request = findRequestById(requestId);
-//        Provider provider = providerRepository.findById(providerId)
-//                .orElseThrow(() -> new NotFoundException("Provider not found"));
-//
-//        request.setProvider(provider);
-//        request.setStatus(Status.ACCEPTED);
-//
-//        calculateCostAndEta(request, provider);
-//
-//        serviceRequestRepository.save(request);
-//        return mapper.toResponse(request);
-//    }
 
     @Transactional
     public ServiceRequestResponse acceptRequest(Long requestId, Long providerId) {
@@ -120,11 +101,11 @@ public List<ServiceRequestResponse> getRequestsByCustomer(Long customerId) {
         Provider provider = providerRepository.findById(providerId)
                 .orElseThrow(() -> new NotFoundException("Provider not found"));
 
-        // ربط الـ Provider بالـ Request
+
         request.setProvider(provider);
         request.setStatus(Status.ACCEPTED);
 
-        //  حساب التكلفه
+        //  calc cost
         double basePrice = PricingUtils.getBasePrice(request.getIssueType());
 
         double distance = GeoUtils.haversine(
@@ -134,7 +115,7 @@ public List<ServiceRequestResponse> getRequestsByCustomer(Long customerId) {
                 provider.getCurrentLocation().getLongitude()
         );
 
-        double distanceCost = distance * 10; // 10 جنيه لكل كم
+        double distanceCost = distance * 10; // 10 per 1 km
         double totalCost = basePrice + distanceCost;
 
         request.setTotalCost(BigDecimal.valueOf(totalCost));

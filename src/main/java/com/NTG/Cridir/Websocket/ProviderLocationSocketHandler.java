@@ -19,7 +19,7 @@ public class ProviderLocationSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         sessions.put(session.getId(), session);
-        System.out.println("✅ WebSocket connected: " + session.getId());
+        System.out.println(" WebSocket connected: " + session.getId());
     }
 
     @Override
@@ -45,6 +45,6 @@ public class ProviderLocationSocketHandler extends TextWebSocketHandler {
         } catch (Exception ignored) { }
     }
 
-    // simple DTO for outgoing messages
+    //  DTO for outgoing messages
     private record Outgoing(Long providerId, Double lat, Double lng) {}
 }

@@ -41,9 +41,9 @@ public class LocationService {
 
         Location loc = provider.getCurrentLocation();
         if (loc == null) {
-            loc = locationMapper.toEntity(req); // جديد
+            loc = locationMapper.toEntity(req);
         } else {
-            locationMapper.updateEntityFromDto(req, loc); // تحديث
+            locationMapper.updateEntityFromDto(req, loc);
         }
 
         loc = locationRepository.save(loc);
@@ -67,7 +67,7 @@ public class LocationService {
         ServiceRequest request = serviceRequestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Request not found"));
 
-        // ✅ تأكد إن الـ request ده تابع للـ Customer الحالي
+
         if (!request.getCustomer().getUser().getUserId().equals(customerId)) {
             throw new RuntimeException("Unauthorized to view this provider location");
         }

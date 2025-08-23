@@ -38,7 +38,7 @@ public class LocationController {
             @PathVariable Long requestId,
             @RequestHeader("Authorization") String authHeader) {
 
-        // استخرج الـ token من الهيدر
+
         String token = authHeader.replace("Bearer ", "");
         Long customerId = authService.getCurrentUserId(token);
 

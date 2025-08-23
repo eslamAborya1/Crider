@@ -25,5 +25,6 @@ public interface UserMapper {
     UserProfileDTO toProfileDTO(User user);
 
     // update profile
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUserFromRequest(UserUpdateRequest request, @MappingTarget User user);
 }
