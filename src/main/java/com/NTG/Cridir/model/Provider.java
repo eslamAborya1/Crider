@@ -1,5 +1,6 @@
 package com.NTG.Cridir.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -25,6 +26,7 @@ public class Provider {
     private Location currentLocation;
 
     @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<ServiceRequest> serviceRequests;
     @Transient
     public String getName() {

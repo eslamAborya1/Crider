@@ -58,6 +58,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/request/**").hasAnyRole("CUSTOMER", "PROVIDER")
+                        .requestMatchers("/user/**").hasAnyRole("CUSTOMER", "PROVIDER") // ✅ أضف السطر ده
                         .requestMatchers("/location/**", "/providers/**").permitAll()
                         .anyRequest().authenticated()
                 )

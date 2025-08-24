@@ -1,6 +1,7 @@
 package com.NTG.Cridir.model;
 
 import com.NTG.Cridir.model.Enum.Status;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,11 +19,13 @@ public class ServiceRequest {
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_service_request_customer"))
+    @JsonBackReference
     private Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "provider_id",
             foreignKey = @ForeignKey(name = "fk_service_request_provider"))
+    @JsonBackReference
     private Provider provider;
 
     @ManyToOne

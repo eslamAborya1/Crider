@@ -1,11 +1,13 @@
 package com.NTG.Cridir.controller;
 
+import com.NTG.Cridir.DTOs.AvailabilityResponse;
 import com.NTG.Cridir.DTOs.ProviderAvailabilityRequest;
+import com.NTG.Cridir.DTOs.ProviderResponseDTO;
 import com.NTG.Cridir.model.Provider;
 import com.NTG.Cridir.repository.ProviderRepository;
-import com.NTG.Cridir.service.LocationService;
-import jakarta.persistence.EntityNotFoundException;
+import com.NTG.Cridir.service.ProviderService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,29 +17,40 @@ import java.util.List;
 @RequestMapping("/providers")
 public class ProviderController {
     private final ProviderRepository providerRepository;
-    private final LocationService locationService;
+    private final ProviderService providerService;
 
-    public ProviderController(ProviderRepository providerRepository, LocationService locationService) {
+
+    public ProviderController(ProviderRepository providerRepository, ProviderService providerService) {
         this.providerRepository = providerRepository;
-        this.locationService = locationService;
+
+        this.providerService = providerService;
     }
     @PreAuthorize("hasRole('PROVIDER')")
     @PutMapping("/{providerId}/availability")
-    public void toggleAvailability(@PathVariable Long providerId,
-                                   @RequestBody @Valid ProviderAvailabilityRequest req) {
-        locationService.toggleProviderAvailability(providerId, req.available());
+    public ResponseEntity<AvailabilityResponse> toggleAvailability(
+            @PathVariable Long providerId,
+            @RequestBody @Valid ProviderAvailabilityRequest req) {
+
+        providerService.toggleProviderAvailability(providerId, req.available());
+
+        AvailabilityResponse response = new AvailabilityResponse(
+                providerId,
+                req.available(),
+                "Availability updated successfully"
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/available")
-    public List<Provider> availableProviders() {
-        return providerRepository.findByAvailabilityStatusTrue();
+    public List<ProviderResponseDTO> availableProviders() {
+        return providerService.getAvailableProviders();
     }
 
-    @PreAuthorize("hasRole('CUSTOMER') or hasRole('PROVIDER')")
+    @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/{providerId}")
-    public Provider getProvider(@PathVariable Long providerId) {
-        return providerRepository.findById(providerId)
-                .orElseThrow(() -> new EntityNotFoundException("Provider not found"));
+    public ProviderResponseDTO getProvider(@PathVariable Long providerId) {
+        return providerService.getProviderById(providerId);
     }
 }

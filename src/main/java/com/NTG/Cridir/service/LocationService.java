@@ -80,12 +80,6 @@ public class LocationService {
         return provider.getCurrentLocation();
     }
 
-    public void toggleProviderAvailability(Long providerId, boolean available) {
-        Provider provider = providerRepository.findById(providerId)
-                .orElseThrow(() -> new NotFoundException("Provider not found"));
 
-        provider.setAvailabilityStatus(available);
-        providerRepository.save(provider);
-    }
 
 }
