@@ -42,7 +42,14 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+
+
+        if ("*".equals(allowedOrigins)) {
+            config.addAllowedOriginPattern("*");
+        } else {
+            config.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+        }
+
         config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization","Content-Type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -57,8 +64,9 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/activate/**").permitAll()
                         .requestMatchers("/request/**").hasAnyRole("CUSTOMER", "PROVIDER")
-                        .requestMatchers("/user/**").hasAnyRole("CUSTOMER", "PROVIDER") // ✅ أضف السطر ده
+                        .requestMatchers("/user/**").hasAnyRole("CUSTOMER", "PROVIDER")
                         .requestMatchers("/location/**", "/providers/**").permitAll()
                         .anyRequest().authenticated()
                 )

@@ -27,7 +27,7 @@ public class EmailService {
     private String appBaseUrl;
 
     public void sendActivationEmail(User user, String token) {
-        String activationLink = appBaseUrl + "/activate?token=" + token;
+        String activationLink = "https://1a1e68ae691a.ngrok-free.app" + "/auth/activate?token=" + token;
 
         String subject = "Activate your Cridir account";
         String body = "<p>Hello " + user.getName() + ",</p>"
@@ -62,7 +62,7 @@ public class EmailService {
 
         String resetToken = jwtService.generateToken(user);
 
-        String resetLink = appBaseUrl + "/reset-password?token=" + resetToken;
+        String resetLink = "https://1a1e68ae691a.ngrok-free.app" + "/reset-password?token=" + resetToken;
 
         String subject = "Reset your Cridir password";
         String body = "<p>Hello " + user.getName() + ",</p>"

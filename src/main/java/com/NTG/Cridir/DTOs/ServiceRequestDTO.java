@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 
 //Used when client sends data to us (backend) (e.g. Customer creating a request).
 
-public record ServiceRequestDTO(
+public record   ServiceRequestDTO(
         @NotNull Long customerId,
         @NotBlank String issueType,
         @NotBlank String carType,
