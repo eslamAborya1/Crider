@@ -2,11 +2,14 @@ package com.NTG.Cridir.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.time.OffsetDateTime;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name = "location")
 public class Location {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -33,6 +33,7 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("User not found"));
         return userMapper.toProfileDTO(user);
     }
+
     @Transactional
     public UserProfileDTO updateProfile(String email, UserUpdateRequest request) {
         User user = userRepository.findByEmail(email)

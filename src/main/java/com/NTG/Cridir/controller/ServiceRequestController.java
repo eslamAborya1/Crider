@@ -3,9 +3,12 @@ package com.NTG.Cridir.controller;
 import com.NTG.Cridir.DTOs.ServiceRequestDTO;
 import com.NTG.Cridir.DTOs.ServiceRequestResponse;
 import com.NTG.Cridir.model.Enum.Status;
+import com.NTG.Cridir.model.ServiceRequest;
+import com.NTG.Cridir.service.JwtService;
 import com.NTG.Cridir.service.ServiceRequestService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,17 +20,32 @@ import java.util.List;
 public class ServiceRequestController {
 
     private final ServiceRequestService serviceRequestService;
+    private final JwtService jwtService;
     @Autowired
-    public ServiceRequestController(ServiceRequestService serviceRequestService) {
+    public ServiceRequestController(ServiceRequestService serviceRequestService, JwtService jwtService) {
         this.serviceRequestService = serviceRequestService;
+        this.jwtService = jwtService;
     }
 
     // Customer creates request
+//    @PreAuthorize("hasRole('CUSTOMER')")
+//   @PostMapping
+//   public ServiceRequestResponse createRequest(@RequestBody @Valid ServiceRequestDTO dto) {
+//        return serviceRequestService.createRequest(dto);
+//
+//    }
     @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping
-    public ServiceRequestResponse createRequest(@RequestBody @Valid ServiceRequestDTO dto) {
-        return serviceRequestService.createRequest(dto);
+    public ResponseEntity<ServiceRequestResponse> createRequest(
+            @RequestBody @Valid ServiceRequestDTO dto,
+            @RequestHeader("Authorization") String authHeader) {
 
+        String token = authHeader.replace("Bearer ", "");
+        Long userId = jwtService.extractUserId(token);
+
+        ServiceRequestResponse response = serviceRequestService.createRequest(dto, userId);
+
+        return ResponseEntity.ok(response);
     }
 
     // Get request by id
@@ -43,6 +61,7 @@ public class ServiceRequestController {
     public List<ServiceRequestResponse> getCustomerRequests(@PathVariable Long customerId) {
         return serviceRequestService.getRequestsByCustomer(customerId);
     }
+
     //ال requests الخاصه ب provider معين
     @PreAuthorize("hasRole('PROVIDER')")
     @GetMapping("/provider/{providerId}")

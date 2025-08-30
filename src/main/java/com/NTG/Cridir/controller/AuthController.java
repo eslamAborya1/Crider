@@ -1,9 +1,6 @@
 package com.NTG.Cridir.controller;
 
-import com.NTG.Cridir.DTOs.AuthResponse;
-import com.NTG.Cridir.DTOs.LoginRequest;
-import com.NTG.Cridir.DTOs.ResetPasswordRequest;
-import com.NTG.Cridir.DTOs.SignupRequest;
+import com.NTG.Cridir.DTOs.*;
 import com.NTG.Cridir.service.AuthService;
 import com.NTG.Cridir.service.EmailService;
 import jakarta.validation.Valid;
@@ -21,9 +18,10 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> signup(@Valid @RequestBody SignupRequest request) {
+    public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest request) {
         return ResponseEntity.ok(authService.signup(request));
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -38,9 +36,17 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestParam String email) {
-        emailService.sendResetPasswordEmail(email);
-        return ResponseEntity.ok("Reset password link sent!");
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        emailService.sendResetPasswordCode(request.email());
+        return ResponseEntity.ok("Verification code sent to your email!");
+    }
+
+    @PostMapping("/verify-reset-code")
+    public ResponseEntity<String> verifyResetCode(
+            @RequestParam String email,
+            @RequestParam String code) {
+        authService.verifyResetCode(email, code);
+        return ResponseEntity.ok("Code verified. You can reset your password now.");
     }
 
     @PostMapping("/reset-password")
@@ -48,4 +54,5 @@ public class AuthController {
         authService.resetPassword(request);
         return ResponseEntity.ok("Password reset successful!");
     }
+
 }

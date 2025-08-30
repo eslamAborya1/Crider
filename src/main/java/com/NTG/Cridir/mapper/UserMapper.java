@@ -8,7 +8,6 @@ import org.mapstruct.*;
 import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring")
-@Component
 public interface UserMapper {
 
     @Mapping(target = "userId", ignore = true)

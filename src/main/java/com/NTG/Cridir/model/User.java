@@ -4,6 +4,8 @@ import com.NTG.Cridir.model.Enum.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")
 @Data @NoArgsConstructor @AllArgsConstructor
@@ -26,5 +28,13 @@ public class User {
     @Column(nullable = false)
     private boolean enabled = false;
 
+    @Column
+    private String resetCode;
+
+    @Column
+    private LocalDateTime resetCodeExpiry;
+
+    @Column(nullable = false)
+    private boolean resetVerified = false;
 
 }

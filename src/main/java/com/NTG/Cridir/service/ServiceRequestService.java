@@ -22,39 +22,61 @@ public class ServiceRequestService {
     private final ServiceRequestRepository serviceRequestRepository;
     private final CustomerRepository customerRepository;
     private final ProviderRepository providerRepository;
+    private final JwtService jwtService;
     private final LocationRepository locationRepository;
     private final ServiceRequestMapper mapper;
 
     public ServiceRequestService(ServiceRequestRepository serviceRequestRepository,
                                  CustomerRepository customerRepository,
                                  ProviderRepository providerRepository,
-                                 LocationRepository locationRepository,
+                                 JwtService jwtService, LocationRepository locationRepository,
                                  ServiceRequestMapper mapper) {
         this.serviceRequestRepository = serviceRequestRepository;
         this.customerRepository = customerRepository;
         this.providerRepository = providerRepository;
+        this.jwtService = jwtService;
         this.locationRepository = locationRepository;
         this.mapper = mapper;
     }
 
     // Customer creates a request
-    public ServiceRequestResponse createRequest(ServiceRequestDTO dto) {
-        Customer customer = customerRepository.findById(dto.customerId())
-                .orElseThrow(() -> new NotFoundException("Customer not found"));
+//    public ServiceRequestResponse createRequest(ServiceRequestDTO dto) {
+//        Customer customer = customerRepository.findById(dto.)
+//                .orElseThrow(() -> new NotFoundException("Customer not found"));
+//
+//        // location
+//        Location location = new Location();
+//        mapper.updateLocationFromDto(dto, location);
+//        locationRepository.save(location);
+//
+//        // request
+//        ServiceRequest request = mapper.toEntity(dto);
+//        request.setCustomer(customer);
+//        request.setLocation(location);
+//
+//        serviceRequestRepository.save(request);
+//        return mapper.toResponse(request);
+//    }
+    public ServiceRequestResponse createRequest(ServiceRequestDTO dto, Long userId) {
+        ServiceRequest request = mapper.toEntity(dto);
 
-        // location
+        // اربط الـ customer بالـ userId
+        Customer customer = customerRepository.findByUser_UserId(userId)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        request.setCustomer(customer);
+
+        // اعمل location
         Location location = new Location();
         mapper.updateLocationFromDto(dto, location);
-        locationRepository.save(location);
-
-        // request
-        ServiceRequest request = mapper.toEntity(dto);
-        request.setCustomer(customer);
+        location = locationRepository.save(location);
         request.setLocation(location);
 
-        serviceRequestRepository.save(request);
-        return mapper.toResponse(request);
+        ServiceRequest saved = serviceRequestRepository.save(request);
+        return mapper.toResponse(saved);
     }
+
+
+
 
     public ServiceRequestResponse updateStatus(Long requestId, Status status) {
         ServiceRequest request = findRequestById(requestId);
@@ -67,12 +89,12 @@ public class ServiceRequestService {
         return mapper.toResponse(findRequestById(requestId));
     }
 
-public List<ServiceRequestResponse> getRequestsByCustomer(Long customerId) {
-    return serviceRequestRepository.findByCustomerCustomerId(customerId)
-            .stream()
-            .map(mapper::toResponse)
-            .toList();
-}
+    public List<ServiceRequestResponse> getRequestsByCustomer(Long customerId) {
+        return serviceRequestRepository.findByCustomerCustomerId(customerId)
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
+    }
 
 
     public List<ServiceRequestResponse> getRequestsByProvider(Long providerId) {

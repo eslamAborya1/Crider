@@ -7,7 +7,6 @@ import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring")
-@Component
 public interface ProviderMapper {
 
     @Mapping(source = "providerId", target = "providerId")

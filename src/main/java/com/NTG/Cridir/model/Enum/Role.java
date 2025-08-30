@@ -1,5 +1,5 @@
-package com.NTG.Cridir.model.Enum;
+    package com.NTG.Cridir.model.Enum;
 
-public enum Role {
-    CUSTOMER , PROVIDER
-}
+    public enum Role {
+        CUSTOMER , PROVIDER
+    }
