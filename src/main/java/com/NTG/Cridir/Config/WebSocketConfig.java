@@ -1,6 +1,6 @@
 package com.NTG.Cridir.Config;
 
-import com.NTG.Cridir.Websocket.ProviderLocationSocketHandler;
+import com.NTG.Cridir.Websocket.RideSocketHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -13,18 +13,19 @@ import java.util.Arrays;
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private final ProviderLocationSocketHandler handler;
+    private final RideSocketHandler rideSocketHandler;
 
     @Value("${app.cors.allowed-origins:*}")
     private String allowedOrigins;
 
-    public WebSocketConfig(ProviderLocationSocketHandler handler) {
-        this.handler = handler;
+    public WebSocketConfig(RideSocketHandler rideSocketHandler) {
+        this.rideSocketHandler = rideSocketHandler;
     }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(handler, "/ws/location")
+        registry.addHandler(rideSocketHandler, "/ws/ride")
                 .setAllowedOrigins(Arrays.stream(allowedOrigins.split(",")).toArray(String[]::new));
     }
 }
+

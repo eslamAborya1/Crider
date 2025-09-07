@@ -1,7 +1,7 @@
 package com.NTG.Cridir.service;
 
 import com.NTG.Cridir.DTOs.LocationUpdateRequest;
-import com.NTG.Cridir.Websocket.ProviderLocationSocketHandler;
+import com.NTG.Cridir.Websocket.RideSocketHandler;
 import com.NTG.Cridir.exception.NotFoundException;
 import com.NTG.Cridir.mapper.LocationMapper;
 import com.NTG.Cridir.model.Location;
@@ -13,18 +13,20 @@ import com.NTG.Cridir.repository.ServiceRequestRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @Service
 public class LocationService {
 
     private final LocationRepository locationRepository;
     private final ProviderRepository providerRepository;
-    private final ProviderLocationSocketHandler socketHandler;
+    private final RideSocketHandler socketHandler;
     private final LocationMapper locationMapper;
     private final ServiceRequestRepository serviceRequestRepository;
 
     public LocationService(LocationRepository locationRepository,
                            ProviderRepository providerRepository,
-                           ProviderLocationSocketHandler socketHandler,
+                           RideSocketHandler socketHandler,
                            LocationMapper locationMapper, ServiceRequestRepository serviceRequestRepository) {
         this.locationRepository = locationRepository;
         this.providerRepository = providerRepository;
@@ -50,8 +52,21 @@ public class LocationService {
         provider.setCurrentLocation(loc);
         providerRepository.save(provider);
 
-        socketHandler.broadcastProviderLocation(provider.getProviderId(), loc);
+        // هات الـ request المرتبط بالـ provider
+        ServiceRequest request = serviceRequestRepository.findByProvider_ProviderId(provider.getProviderId())
+                .orElseThrow(() -> new NotFoundException("No active request for this provider"));
+
+        try {
+            socketHandler.broadcastLocation(
+                    request.getRequestId(),
+                    loc.getLatitude(),
+                    loc.getLongitude()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to broadcast location", e);
+        }
     }
+
 
     @Transactional(readOnly = true)
     public Location getProviderLocation(Long providerId) {
