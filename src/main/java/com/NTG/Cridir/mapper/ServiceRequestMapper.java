@@ -16,6 +16,7 @@ public interface ServiceRequestMapper {
     @Mapping(target = "location", ignore = true)
     @Mapping(target = "status", constant = "PENDING")
     @Mapping(target = "totalCost", expression = "java(java.math.BigDecimal.ZERO)")
+    @Mapping(target = "issueType", source = "issueType")
     ServiceRequest toEntity(ServiceRequestDTO dto);
 
     // Entity -> Response

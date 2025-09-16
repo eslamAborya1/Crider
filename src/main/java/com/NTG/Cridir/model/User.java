@@ -37,4 +37,11 @@ public class User {
     @Column(nullable = false)
     private boolean resetVerified = false;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Customer customer;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Provider provider;
+
+
 }

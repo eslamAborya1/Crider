@@ -11,6 +11,7 @@ import com.NTG.Cridir.repository.*;
 import com.NTG.Cridir.util.GeoUtils;
 import com.NTG.Cridir.util.PricingUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +34,7 @@ public class ServiceRequestService {
     public ServiceRequestService(ServiceRequestRepository serviceRequestRepository,
                                  CustomerRepository customerRepository,
                                  ProviderRepository providerRepository,
-                                  RideSocketHandler rideSocketHandler, LocationRepository locationRepository,
+                                 @Lazy RideSocketHandler rideSocketHandler, LocationRepository locationRepository,
                                  ServiceRequestMapper mapper) {
         this.serviceRequestRepository = serviceRequestRepository;
         this.customerRepository = customerRepository;

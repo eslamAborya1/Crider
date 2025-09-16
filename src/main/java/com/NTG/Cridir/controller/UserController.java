@@ -18,14 +18,14 @@ public class UserController {
         this.userService = userService;
     }
 
-    // 4. GET /api/user/profile
+
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('PROVIDER')")
     @GetMapping("/profile")
     public UserProfileDTO getProfile(@AuthenticationPrincipal UserDetails userDetails) {
         return userService.getProfile(userDetails.getUsername());
     }
 
-    // 5. PUT /api/user/me
+
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('PROVIDER')")
     @PutMapping("/update")
     public UserProfileDTO updateProfile(
