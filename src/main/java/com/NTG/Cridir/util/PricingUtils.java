@@ -18,7 +18,7 @@ public class PricingUtils {
         if (issueType == null) {
             return 0.0;
         }
-       
+
         String normalized = issueType.trim().toUpperCase();
         return BASE_PRICES.getOrDefault(normalized, 0.0);
     }

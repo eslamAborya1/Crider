@@ -70,15 +70,20 @@ public class ServiceRequestService {
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
         request.setCustomer(customer);
 
-        // اعمل location
+        // location
         Location location = new Location();
         mapper.updateLocationFromDto(dto, location);
         location = locationRepository.save(location);
         request.setLocation(location);
 
+        // حط baseCost بس
+        double baseCost = PricingUtils.getBasePrice(dto.issueType());
+        request.setTotalCost(BigDecimal.valueOf(baseCost));
+
         ServiceRequest saved = serviceRequestRepository.save(request);
         return mapper.toResponse(saved);
     }
+
 
 
 
@@ -202,15 +207,22 @@ public class ServiceRequestService {
                     customerLoc.getLatitude(), customerLoc.getLongitude()
             );
 
-            double baseCost = PricingUtils.getBasePrice(request.getIssueType());
+            // خد baseCost اللي اتحسب قبل كده
+            double baseCost = request.getTotalCost().doubleValue();
+
+            // distanceFee
             double distanceFee = distanceKm * 10;
+
+            // اجمع الاتنين
             request.setTotalCost(BigDecimal.valueOf(baseCost + distanceFee));
 
+            // ETA
             double speedKmh = 80.0;
             long etaSeconds = (long) ((distanceKm / speedKmh) * 3600);
             request.setEstimatedArrivalTime(java.time.Duration.ofSeconds(etaSeconds));
         }
     }
+
 
 }
 
