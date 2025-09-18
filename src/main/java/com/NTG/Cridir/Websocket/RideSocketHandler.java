@@ -41,14 +41,14 @@ public class RideSocketHandler extends TextWebSocketHandler {
                 session.getAttributes().put("role", role);
                 session.getAttributes().put("userId", userId);
 
-                log.info("✅ WebSocket Auth Success → userId={} role={}", userId, role);
+                log.info(" WebSocket Auth Success → userId={} role={}", userId, role);
 
             } catch (Exception e) {
-                log.warn("❌ Invalid token in WebSocket connection: {}", e.getMessage());
+                log.warn(" Invalid token in WebSocket connection: {}", e.getMessage());
                 session.close(CloseStatus.NOT_ACCEPTABLE.withReason("Invalid token"));
             }
         } else {
-            log.warn("❌ Missing token in WebSocket connection");
+            log.warn(" Missing token in WebSocket connection");
             session.close(CloseStatus.NOT_ACCEPTABLE.withReason("Missing token"));
         }
     }

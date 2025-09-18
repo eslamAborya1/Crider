@@ -23,7 +23,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final EmailService emailService;
-    private final UserMapper userMapper; 
+    private final UserMapper userMapper;
 
     public AuthService(UserRepository userRepository,
                        CustomerRepository customerRepository,
@@ -142,9 +142,13 @@ public class AuthService {
 
     private void createRoleEntity(User user) {
         if (user.getRole() == Role.CUSTOMER) {
-            var c = new Customer(); c.setUser(user); customerRepository.save(c);
+            var c = new Customer();
+            c.setUser(user);
+            customerRepository.save(c);
         } else if (user.getRole() == Role.PROVIDER) {
-            var p = new Provider(); p.setUser(user); providerRepository.save(p);
+            var p = new Provider();
+            p.setUser(user);
+            providerRepository.save(p);
         }
     }
 

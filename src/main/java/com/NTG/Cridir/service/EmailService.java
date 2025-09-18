@@ -42,22 +42,6 @@ public class EmailService {
         sendEmail(user.getEmail(), subject, body);
     }
 
-//    public void sendEmail(String to, String subject, String htmlContent) {
-//        try {
-//            MimeMessage message = mailSender.createMimeMessage();
-//            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-//
-//            helper.setFrom("member@cridir.com");
-//            helper.setTo(to);
-//            helper.setSubject(subject);
-//            helper.setText(htmlContent, true);
-//
-//            mailSender.send(message);
-//            System.out.println(" Email sent to " + to);
-//        } catch (MessagingException e) {
-//            throw new RuntimeException(" Failed to send email", e);
-//        }
-//    }
 private void sendEmail(String to, String subject, String htmlContent) {
     try {
         MimeMessage message = mailSender.createMimeMessage();
@@ -74,40 +58,6 @@ private void sendEmail(String to, String subject, String htmlContent) {
         throw new RuntimeException("Failed to send email", e);
     }
 }
-
-//    @Transactional
-//    public void sendResetPasswordEmail(String email) {
-//        User user = userRepository.findByEmail(email)
-//                .orElseThrow(() -> new NotFoundException("User not found"));
-//
-//
-//        String resetToken = jwtService.generateToken(user);
-//
-//        String resetLink = appBaseUrl + "/reset-password?token=" + resetToken;
-//
-//        String subject = "Reset your Cridir password";
-//        String body = "<p>Hello " + user.getName() + ",</p>"
-//                + "<p>We received a request to reset your password.</p>"
-//                + "<p><a href=\"" + resetLink + "\">Click here to reset your password</a></p>"
-//                + "<p>If you didn’t request this, you can safely ignore this email.</p>";
-//
-//        sendEmail(user.getEmail(), subject, body);
-//    }
-//public void resetPassword(ResetPasswordRequest request) {
-//    User user = userRepository.findByEmail(request.email())
-//            .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//    if (!request.code().equals(user.getResetCode()))
-//        throw new RuntimeException("Invalid reset code");
-//
-//    if (passwordEncoder.matches(request.newPassword(), user.getPassword()))
-//        throw new RuntimeException("New password cannot be the same as the old one");
-//
-//    user.setPassword(passwordEncoder.encode(request.newPassword()));
-//    user.setResetCode(null); // امسح الكود بعد الاستخدام
-//    userRepository.save(user);
-//}
-
 
     @Transactional
     public void sendResetPasswordCode(String email) {
