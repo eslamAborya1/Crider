@@ -1,4 +1,4 @@
-# 🚗 CRidir – Smart Car Road Assistant  
+# 🚗 CRidr – Smart Car Road Assistant  
 
 ## 📌 Overview  
 **CRidir** is a smart road assistance system for drivers.  
