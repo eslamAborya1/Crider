@@ -1,7 +1,7 @@
 # 🚗 CRidr – Smart Car Road Assistant  
 
 ## 📌 Overview  
-**CRidir** is a smart road assistance system for drivers.  
+**CRidr** is a smart road assistance system for drivers.  
 
 - A **Customer** can create a **service request** (e.g., flat tire, battery issues, or any car breakdown).  
 - A **Provider** (mechanic, towing service, etc.) can view nearby pending requests and accept one.  
